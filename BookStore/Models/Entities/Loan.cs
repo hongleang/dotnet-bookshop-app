@@ -1,4 +1,4 @@
-namespace BookStore.Models;
+namespace BookStore.Models.Entities;
 
 public class Loan
 {
@@ -11,6 +11,6 @@ public class Loan
 
     public DateOnly LoanDate { get; set; }
     public DateOnly DueDate { get; set; }
-    public DateOnly? ReturnedDate { get; set; } = null;
+    public DateOnly? ReturnedDate { get; set; }
     
 }

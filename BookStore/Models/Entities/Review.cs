@@ -1,4 +1,4 @@
-namespace BookStore.Models;
+namespace BookStore.Models.Entities;
 
 public class Review
 {

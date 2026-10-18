@@ -1,4 +1,4 @@
-namespace BookStore.Models;
+namespace BookStore.Models.Entities;
 
 public class Book
 {
@@ -20,5 +20,5 @@ public class Book
     
     public ICollection<Review> Reviews { get; set; }
     
-    public bool IsDeleted  { get; set; } = false;
+    public bool IsDeleted  {get; set;}
 }

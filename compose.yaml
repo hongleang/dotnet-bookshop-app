@@ -4,4 +4,24 @@
     build:
       context: .
       dockerfile: BookStore/Dockerfile
+  postgres:
+    image: postgres:17
+    container_name: bookstore-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bookstore
+      POSTGRES_PASSWORD: bookstore_pass
+      POSTGRES_DB: bookstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U bookstore -d bookstore" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
 
