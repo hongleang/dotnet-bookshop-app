@@ -20,6 +20,8 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .WithMany(m => m.Reviews)
             .HasForeignKey(r => r.MemberId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Property(r => r.Rating).HasPrecision(2, 1);
 
         // one review per member per book
         builder.HasIndex(r => new { r.BookId, r.MemberId }).IsUnique();

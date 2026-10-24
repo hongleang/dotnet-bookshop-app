@@ -5,4 +5,7 @@ seed:
 	dotnet run --project BookStore.Cli -- seed
 
 fresh:
-	dotnet run --project BookStore.Cli -- fresh --seed
+	dotnet run --project BookStore.Cli -- fresh
+	
+fresh-and-seed:
+    dotnet run --project BookStore.Cli -- fresh --seed

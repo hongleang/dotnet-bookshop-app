@@ -9,18 +9,18 @@ public class DataSeeder
     private readonly AppDbContext _db;
 
     public DataSeeder(AppDbContext db) => _db = db;
-    
+
     public async Task SeedAsync(CancellationToken ct)
     {
         if (await _db.Authors.AnyAsync()) return;
-        
+
         var authors = new Faker<Author>()
             .RuleFor(u => u.FirstName, f => f.Name.FirstName())
             .RuleFor(u => u.LastName, f => f.Name.LastName())
             .RuleFor(u => u.Bio, (f, u) => f.Lorem.Text())
             .RuleFor(u => u.DateOfBirth, f => DateOnly.FromDateTime(f.Date.Past(30, DateTime.Now.AddYears(-18))))
             .Generate(20);
-        
+
         _db.Authors.AddRange(authors);
         await _db.SaveChangesAsync(ct);
 
@@ -57,7 +57,7 @@ public class DataSeeder
 
         _db.Books.AddRange(books);
         await _db.SaveChangesAsync(ct);
-        
+
         var members = new Faker<Member>()
             .RuleFor(m => m.FirstName, f => f.Name.FirstName())
             .RuleFor(m => m.LastName, f => f.Name.LastName())
@@ -65,12 +65,12 @@ public class DataSeeder
             .RuleFor(m => m.Phone, f => f.Phone.PhoneNumber())
             .RuleFor(m => m.JoinedDate, f => DateOnly.FromDateTime(f.Date.Past(1, DateTime.Now)))
             .Generate(20);
-        
+
         _db.Members.AddRange(members);
         await _db.SaveChangesAsync(ct);
 
         var today = DateOnly.FromDateTime(DateTime.Today);
-        
+
         var loans = new Faker<Loan>()
             .RuleFor(l => l.BookId, f => f.PickRandom(books).Id)
             .RuleFor(l => l.MemberId, f => f.PickRandom(members).Id)
@@ -78,13 +78,23 @@ public class DataSeeder
             .RuleFor(l => l.DueDate, (f, l) => l.LoanDate.AddDays(14))
             .RuleFor(l => l.ReturnedDate, (f, l) =>
             {
-                if (f.Random.Bool(0.3f)) return null;                      // never returned
-                var returned = l.LoanDate.AddDays(f.Random.Number(1, 21)); // sometimes after the due date
-                return returned <= today ? returned : null;                // can't be returned in the future
+                if (f.Random.Bool(0.3f)) return null;
+                var returned = l.LoanDate.AddDays(f.Random.Number(1, 21));
+                return returned <= today ? returned : null;
             })
             .Generate(20);
-        
+
         _db.Loans.AddRange(loans);
+        await _db.SaveChangesAsync(ct);
+
+        var reviews = new Faker<Review>()
+            .RuleFor(r => r.BookId, f => f.PickRandom(books).Id)
+            .RuleFor(r => r.MemberId, f => f.PickRandom(members).Id)
+            .RuleFor(r => r.Comment, f => f.Lorem.Paragraph())
+            .RuleFor(r => r.Rating, f => Math.Round(f.Random.Decimal(1, 5) * 2, MidpointRounding.AwayFromZero) / 2)
+            .Generate(20);
+        
+        _db.Reviews.AddRange(reviews);
         await _db.SaveChangesAsync(ct);
     }
 }

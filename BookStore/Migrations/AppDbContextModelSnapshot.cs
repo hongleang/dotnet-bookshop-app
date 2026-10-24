@@ -280,8 +280,9 @@ namespace BookStore.Migrations
                     b.Property<int>("MemberId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Rating")
+                        .HasPrecision(2, 1)
+                        .HasColumnType("numeric(2,1)");
 
                     b.HasKey("Id");
 
