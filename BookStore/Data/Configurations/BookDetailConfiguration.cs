@@ -21,5 +21,7 @@ public class BookDetailConfiguration : IEntityTypeConfiguration<BookDetail>
         {
             t.HasCheckConstraint("CK_BookDetails_Pages", "\"Pages\" > 0");
         });
+        
+        builder.HasQueryFilter(d => d.Book.IsDeleted == false);
     }
 }

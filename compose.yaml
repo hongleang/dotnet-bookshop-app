@@ -1,9 +1,4 @@
 ﻿services:
-  bookstore:
-    image: bookstore
-    build:
-      context: .
-      dockerfile: BookStore/Dockerfile
   postgres:
     image: postgres:17
     container_name: bookstore-db

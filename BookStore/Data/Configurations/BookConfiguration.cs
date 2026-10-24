@@ -31,6 +31,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 
         builder.HasMany(b => b.Categories)
             .WithMany(c => c.Books);
+        
+        builder.Property(b => b.IsDeleted).HasDefaultValue(false);
 
         // soft delete
         builder.HasQueryFilter(b => !b.IsDeleted);
