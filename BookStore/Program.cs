@@ -10,6 +10,9 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddBookStoreData(builder.Configuration.GetConnectionString("DefaultConnection")!);
 
+// Extra services
+builder.Services.AddServices();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
