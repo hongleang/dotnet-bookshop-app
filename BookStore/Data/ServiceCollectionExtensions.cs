@@ -30,5 +30,6 @@ public static class ServiceCollectionExtensions
     private static void MapInterfaceToServices(this IServiceCollection services)
     {
         services.AddScoped<IAuthorService, AuthorService>();
+        services.AddScoped<IBookService, BookService>();
     }
 }

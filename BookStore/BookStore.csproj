@@ -23,6 +23,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+        <PackageReference Include="Riok.Mapperly" Version="4.3.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -32,7 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Api\" />
       <Folder Include="Models\DTOs\" />
     </ItemGroup>
 
