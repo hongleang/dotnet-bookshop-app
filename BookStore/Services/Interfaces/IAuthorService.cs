@@ -11,6 +11,5 @@ public interface IAuthorService
     Task<AuthorDto?> GetAuthorById(int id);
     Task<AuthorDto> CreateAuthor(CreateAuthorDto requestDto);
     Task<AuthorDto?> UpdateAuthor(int id, UpdateAuthorDto dto);
-    Task<DeleteAuthorResult> DeleteAuthor(int id);
-    Task<bool> AuthorExists(int id);
+    Task<DeleteResult> DeleteAuthor(int id);
 }

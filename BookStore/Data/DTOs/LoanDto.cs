@@ -7,5 +7,5 @@ public record LoanDto
     public required int MemberId { get; init; }
     public required DateOnly LoanDate { get; init; }
     public required DateOnly DueDate { get; init; }
-    public DateOnly? ReturnDate { get; init; }
+    public DateOnly? ReturnedDate { get; init; }
 }

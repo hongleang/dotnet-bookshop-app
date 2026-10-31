@@ -1,8 +1,7 @@
 using BookStore.Data;
-using BookStore.Data.DTOs;
 using BookStore.Data.DTOs.Author;
 using BookStore.Enums;
-using BookStore.Models.Entities;
+using BookStore.Mappings;
 using BookStore.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +20,7 @@ public class AuthorService: IAuthorService
     {
         return await _db.Authors
             .AsNoTracking()
-            .Select(a => new AuthorDto
-            {
-                Id = a.Id,
-                FirstName = a.FirstName,
-                LastName = a.LastName,
-                Bio = a.Bio,
-                DateOfBirth = a.DateOfBirth
-            })
+            .ProjectToAuthorDto()
             .ToListAsync();
     }
 
@@ -37,38 +29,18 @@ public class AuthorService: IAuthorService
         return await _db.Authors
             .AsNoTracking()
             .Where(a => a.Id == id)
-            .Select(a => new AuthorDto
-            {
-                Id = a.Id,
-                FirstName = a.FirstName,
-                LastName = a.LastName,
-                Bio = a.Bio,
-                DateOfBirth = a.DateOfBirth,
-            })
+            .ProjectToAuthorDto()
             .FirstOrDefaultAsync();
     }
 
     public async Task<AuthorDto> CreateAuthor(CreateAuthorDto requestDto)
     {
-        var author = new Author
-        {
-            FirstName = requestDto.FirstName,
-            LastName = requestDto.LastName,
-            Bio = requestDto.Bio,
-            DateOfBirth = requestDto.DateOfBirth
-        };
+        var author = requestDto.CreateAuthorDtoToEntity();
         
         _db.Authors.Add(author);
         await _db.SaveChangesAsync();
-        
-        return new AuthorDto
-        {
-            Id = author.Id,
-            FirstName = author.FirstName,
-            LastName = author.LastName,
-            Bio = author.Bio,
-            DateOfBirth = author.DateOfBirth
-        };
+
+        return author.ToAuthorDto();
     }
     
     public async Task<AuthorDto?> UpdateAuthor(int id, UpdateAuthorDto dto)
@@ -77,40 +49,26 @@ public class AuthorService: IAuthorService
 
         if (author is null) return null;
         
-        author.FirstName = dto.FirstName;
-        author.LastName = dto.LastName;
-        author.Bio = dto.Bio;
-        author.DateOfBirth = dto.DateOfBirth;
+        dto.UpdateAuthorEntity(author);
         
         await _db.SaveChangesAsync();
-        return new AuthorDto
-        {
-            Id = author.Id,
-            FirstName = author.FirstName,
-            LastName = author.LastName,
-            Bio = author.Bio,
-            DateOfBirth = author.DateOfBirth
-        };
+        
+        return author.ToAuthorDto();
     }
 
-    public async Task<DeleteAuthorResult> DeleteAuthor(int id)
+    public async Task<DeleteResult> DeleteAuthor(int id)
     {
         var row = await _db.Authors.Where(a => a.Id == id)
             .Select(a => new { Author = a, HasBooks = a.Books.Any(b => !b.IsDeleted) })
             .FirstOrDefaultAsync();
         
-        if (row is null) return DeleteAuthorResult.NotFound;
+        if (row is null) return DeleteResult.NotFound;
 
-        if (row.HasBooks) return DeleteAuthorResult.HasBooks;
+        if (row.HasBooks) return DeleteResult.HasBooks;
         
         _db.Authors.Remove(row.Author);
         await _db.SaveChangesAsync();
         
-        return DeleteAuthorResult.Deleted;
-    }
-
-    public async Task<bool> AuthorExists(int id)
-    {
-        return await _db.Authors.AnyAsync(a => a.Id == id);
+        return DeleteResult.Deleted;
     }
 }

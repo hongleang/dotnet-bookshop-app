@@ -2,11 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using BookStore.Data;
 using BookStore.Data.DTOs.Author;
 using BookStore.Enums;
-using BookStore.Models.Entities;
 using BookStore.Services.Interfaces;
 using BookStore.Validators;
 using FluentValidation;
-using NuGet.Protocol;
 
 namespace BookStore.Controllers.Api
 {
@@ -14,13 +12,11 @@ namespace BookStore.Controllers.Api
     [ApiController]
     public class AuthorController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IValidator<CreateAuthorDto> _createValidator;
         private readonly IValidator<UpdateAuthorDto> _updateValidator;
 
-        public AuthorController(AppDbContext context,  IValidator<CreateAuthorDto> createValidator,  IValidator<UpdateAuthorDto> updateValidator)
+        public AuthorController(IValidator<CreateAuthorDto> createValidator,  IValidator<UpdateAuthorDto> updateValidator)
         {
-            _context = context;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
         }
@@ -83,9 +79,9 @@ namespace BookStore.Controllers.Api
 
             switch (deleted)
             {
-                case DeleteAuthorResult.NotFound:
+                case DeleteResult.NotFound:
                     return NotFound();
-                case DeleteAuthorResult.HasBooks:
+                case DeleteResult.HasBooks:
                     return Conflict(new { message = $"Can't delete authors that have books." });
                 default:
                     return NoContent();

@@ -1,6 +1,6 @@
 namespace BookStore.Enums;
 
-public enum DeleteAuthorResult
+public enum DeleteResult
 {
     Deleted,
     NotFound,

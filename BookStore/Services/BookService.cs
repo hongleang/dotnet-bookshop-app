@@ -1,6 +1,8 @@
 using BookStore.Data;
 using BookStore.Data.DTOs;
 using BookStore.Data.DTOs.Book;
+using BookStore.Enums;
+using BookStore.Mappings;
 using BookStore.Models.Entities;
 using BookStore.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,23 +18,11 @@ public class BookService : IBookService
         _db = dbContext;
     }
 
-    public async Task<IReadOnlyCollection<BookDto>> GetAllBooks()
+    public async Task<IReadOnlyCollection<BookListDto>> GetAllBooks()
     {
         return await _db.Books
             .AsNoTracking()
-            .Select(b => new BookDto
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Isbn = b.BookDetail!.Isbn,
-                Price = b.Price,
-                PublishDate = b.PublishedDate,
-                AuthorId = b.AuthorId,
-                Pages = b.BookDetail.Pages,
-                Publisher = b.BookDetail.Publisher,
-                TotalCopies = b.TotalCopies,
-                AvailableCopies = b.AvailableCopies,
-            })
+            .ProjectToBookListDto()
             .ToListAsync();
     }
 
@@ -41,19 +31,8 @@ public class BookService : IBookService
         return await _db.Books
             .AsNoTracking()
             .Where(b => b.Id == id)
-            .Select(b => new BookDto
-            {
-                Id = b.Id,
-                Title = b.Title,
-                PublishDate = b.PublishedDate,
-                Price = b.Price,
-                Isbn = b.BookDetail!.Isbn,
-                Pages = b.BookDetail.Pages,
-                Publisher = b.BookDetail.Publisher,
-                AuthorId = b.AuthorId,
-                TotalCopies = b.TotalCopies,
-                AvailableCopies = b.AvailableCopies,
-            })
+            .ProjectToBookDto()
+            .AsSplitQuery()
             .FirstOrDefaultAsync();
     }
 
@@ -62,7 +41,7 @@ public class BookService : IBookService
         var book = new Book
         {
             Title = requestDto.Title,
-            PublishedDate = requestDto.PublishDate,
+            PublishedDate = requestDto.PublishedDate,
             Price = requestDto.Price,
             TotalCopies = requestDto.TotalCopies,
             AvailableCopies = requestDto.AvailableCopies,
@@ -114,7 +93,6 @@ public class BookService : IBookService
         {
             Id = book.Id,
             Title = book.Title,
-            PublishDate = book.PublishedDate,
             Price = book.Price,
             Isbn = book.BookDetail.Isbn,
             Pages = book.BookDetail.Pages,
@@ -125,10 +103,12 @@ public class BookService : IBookService
             Language = book.BookDetail.Language,
             Description = book.BookDetail.Description,
             Categories = book.Categories.Select(c => new CategoryDto
-            {
-                Id = c.Id,
-                Name = c.Name
-            }).ToList()
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                })
+                .ToList(),
+            PublishedDate = default
         };
     }
 
@@ -139,7 +119,7 @@ public class BookService : IBookService
         if (book is null) return null;
 
         book.Title = requestDto.Title;
-        book.PublishedDate = requestDto.PublishDate;
+        book.PublishedDate = requestDto.PublishedDate;
         book.Price = requestDto.Price;
         book.TotalCopies = requestDto.TotalCopies;
         book.AvailableCopies = requestDto.AvailableCopies;
@@ -158,7 +138,6 @@ public class BookService : IBookService
         {
             Id = book.Id,
             Title = book.Title,
-            PublishDate = book.PublishedDate,
             Price = book.Price,
             TotalCopies = book.TotalCopies,
             AvailableCopies = book.AvailableCopies,
@@ -166,18 +145,19 @@ public class BookService : IBookService
             Pages = book.BookDetail.Pages,
             Publisher = book.BookDetail.Publisher,
             AuthorId = book.AuthorId,
+            PublishedDate = default,
         };
     }
 
-    public async Task<bool> DeleteBook(int id)
+    public async Task<DeleteResult> DeleteBook(int id)
     {
         var book = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
 
-        if (book is null) return false;
+        if (book is null) return DeleteResult.NotFound;
 
         _db.Books.Remove(book);
         await _db.SaveChangesAsync();
 
-        return true;
+        return DeleteResult.Deleted;
     }
 }

@@ -3,7 +3,7 @@ namespace BookStore.Data.DTOs.Book;
 public record BookRequestDto
 {
     public required string Title { get; init; }
-    public required DateOnly PublishDate { get; init; }
+    public required DateOnly PublishedDate { get; init; }
     public required decimal Price { get; init; }
     public required int TotalCopies { get; init; }
     public required int AvailableCopies { get; init; }

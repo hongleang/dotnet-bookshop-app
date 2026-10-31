@@ -379,7 +379,8 @@ namespace BookStore.Migrations
 
             modelBuilder.Entity("BookStore.Models.Entities.Book", b =>
                 {
-                    b.Navigation("BookDetail");
+                    b.Navigation("BookDetail")
+                        .IsRequired();
 
                     b.Navigation("Loans");
 
